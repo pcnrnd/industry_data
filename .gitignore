@@ -2,3 +2,9 @@
 .recomendation
 .augmentation
 .vscode
+*.db
+git_management.py
+exhdd
+catboost_info
+.venv
+venv
