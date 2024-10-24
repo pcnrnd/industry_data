@@ -95,3 +95,43 @@ class PolarsDataFrame:
             "file_size": self.extract_file_size(paths)
         })
         return df
+
+class PolarsDataFrame:
+    '''
+    polars dataframe 생성
+    '''
+    def __init__(self):
+        # Polars는 별도의 설정이 필요하지 않습니다.
+        pass
+
+    @staticmethod
+    def extract_file_id(paths):
+        '''file_id 추출'''
+        return [os.path.splitext(os.path.basename(path))[0] for path in paths]
+
+    @staticmethod
+    def extract_file_name(paths):
+        '''file_name 추출'''
+        return [os.path.basename(path) for path in paths]
+
+    @staticmethod
+    def extract_folder_name(paths):
+        '''folder_name 추출'''
+        return [os.path.basename(os.path.dirname(path)) for path in paths]
+
+    @staticmethod
+    def extract_file_size(paths):
+        '''file_size 추출'''
+        return [os.path.getsize(path) for path in paths]
+
+    def get_polars_dataframe(self, paths):
+        '''polars_dataframe 생성'''
+        df = pl.DataFrame({
+            "full_path": paths,
+            "file_id": self.extract_file_id(paths),
+            "file_name": self.extract_file_name(paths),
+            "folder_name": self.extract_folder_name(paths),
+            "file_size": self.extract_file_size(paths)
+        })
+        return df
+
