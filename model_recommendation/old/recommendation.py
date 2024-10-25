@@ -106,3 +106,33 @@ with st.spinner('Wait for it...'):
         
         if st.sidebar.button("초기화"):
             st.cache_resource.clear()
+        
+        button_for_training = st.sidebar.button("머신러닝 테스트 실행", key="button1") 
+        if button_for_training: # 분류, 이상탐지 옵션에 따라 머신러닝 학습 진행
+            # start_time = time.time() # 학습 시간 체크 시 설정
+
+            if option == '분류':
+                st.subheader('머신러닝 학습 결과')
+                with st.spinner('Wait for it...'):
+                    if updated_df is None:
+                        updated_df = df   
+                    json_data = updated_df.to_json() # pandas DataFrame를 json 형태로 변환
+                    data_dump = json.dumps({'json_data':json_data, 'target': target_feture}) # 학습 데이터, Target Data 객체를 문자열로 직렬화(serialize)
+                    data = json.loads(data_dump) # json을 파이썬 객체로 변환
+
+                    response = requests.post('http://127.0.0.1:8001/clf', json=data) # NIPA 서버로 머신러닝 학습데이터 request
+                    if response.status_code == 200: 
+                        json_data = response.json() # NIPA 서버에서 학습한 데이터를 json으로 response 
+                        model_compare_clf = json_data['result'] 
+
+                        tab_line, tab_bar = st.tabs(['Line Chart', 'Bar Chart']) # 분류모델 학습 결과 시각화
+                        with tab_line:
+                            st.subheader('Line Chart')
+                            st.line_chart(model_compare_clf)
+                        with tab_bar:
+                            st.subheader('Bar Chart')
+                            st.bar_chart(model_compare_clf)
+
+                        st.subheader('Score')
+                        st.dataframe(model_compare_clf)
+                        ray.shutdown() # 머신러닝 모델 분산 학습 종료
