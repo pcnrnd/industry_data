@@ -23,3 +23,45 @@ uploaded_file = st.sidebar.file_uploader("csv file upload", type="csv") # 파일
 # @st.cache_data # resource
 def load_data(uploaded_file):
     return pd.read_csv(uploaded_file)
+
+with st.spinner('Wait for it...'):
+    if uploaded_file is None: 
+        st.write(
+        '''
+        ### 머신러닝 실행 방법
+        * 분류
+        1. Upload csv file 
+        2. Select Target column 
+        3. Drop cloumns
+        4. 제거할 Target 데이터 선택
+
+        * 이상 탐지
+        1. Upload csv file
+        2. 머신러닝 테스트 실행
+        ''')
+        
+    updated_df = None
+    # Uploaded data Dashboard
+    if uploaded_file is not None:
+        st.subheader('데이터 분석')
+        df = load_data(uploaded_file) 
+        col_list = df.columns.tolist() # 데이터 전처리 옵션 설정 리스트
+        target_feture = ""
+        if option == '분류':
+            target_feture = st.sidebar.multiselect('Select Target Column', options=col_list)
+
+        data_to_drop = st.sidebar.multiselect('Drop Cloumns', options=col_list)
+
+        tab_eda_df, tab_eda_info, tab_Label_counts = st.tabs(['Original data', 'Null information', 'Target Data Counts']) # tab_Label_counts Labels counts
+        with tab_eda_df:
+            st.write('Original data')
+            st.dataframe(df)
+        with tab_eda_info:
+            st.write('Null information')
+            info_df = pd.DataFrame({'Column names': df.columns,
+                                    'Non-Null Count': df.count(),
+                                    'Null Count': df.isnull().sum(),
+                                    'Dtype': df.dtypes,
+                                    })
+            info_df.reset_index(inplace=True)
+            st.write(info_df.iloc[:, 1:].astype(str))
