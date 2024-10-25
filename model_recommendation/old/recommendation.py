@@ -89,3 +89,12 @@ with st.spinner('Wait for it...'):
         if data_to_drop:
             for data in data_to_drop:
                 updated_df = df.drop(data_to_drop, axis=1)
+
+        # 선택한 Target Data 제거
+        try:
+            if label_to_drop:
+                target_feture = target_feture[0]
+                label_to_drop = label_to_drop[0]
+                updated_df = df[df[target_feture] != label_to_drop]
+        except ValueError:
+            st.write('1개 이상 데이터가 남아있어야 합니다.')
