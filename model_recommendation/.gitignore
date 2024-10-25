@@ -1,3 +1,6 @@
 catboost_info
 .venv
 venv
+data
+.recomendation
+.old
