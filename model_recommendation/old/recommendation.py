@@ -65,3 +65,22 @@ with st.spinner('Wait for it...'):
                                     })
             info_df.reset_index(inplace=True)
             st.write(info_df.iloc[:, 1:].astype(str))
+        
+        label_to_drop = ""
+        with tab_Label_counts: # Target Data 정보 출력 및 시각화
+            val_counts_df = None
+            if target_feture:            
+                test = df[target_feture].value_counts().reset_index()
+                val_counts_df = pd.DataFrame({'Labels': test.iloc[:, 0],
+                                            'Counts': test.iloc[:, 1]})
+                st.write(val_counts_df)
+                bar_data = val_counts_df
+                bar_data.index = val_counts_df['Labels']
+                st.bar_chart(bar_data['Counts'])
+
+                # Target Data 설정해야 제거할 Label 선택 가능
+                label_to_drop = st.sidebar.multiselect('제거할 Target 데이터 선택', options=val_counts_df.iloc[:, 0])
+            else:
+                sample_df = pd.DataFrame({'Label': ['Select Label Column'], # Sample Data
+                                        'Counts': ['Select Label Column']})
+                st.write(sample_df)
