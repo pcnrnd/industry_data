@@ -136,3 +136,39 @@ with st.spinner('Wait for it...'):
                         st.subheader('Score')
                         st.dataframe(model_compare_clf)
                         ray.shutdown() # 머신러닝 모델 분산 학습 종료
+
+            if option == '이상탐지':
+                st.subheader('머신러닝 학습 결과')
+                with st.spinner('Wait for it...'):
+                    if updated_df is None:
+                        updated_df = df
+                    json_data = updated_df.to_json() # pandas DataFrame를 json 형태로 변환
+                    data = json.loads(json_data) # json을 파이썬 객체로 변환
+                    
+                    response = requests.post('http://127.0.0.1:8001/anomaly', json=data)  # NIPA 서버로 머신러닝 학습데이터 request
+
+                    if response.status_code == 200:
+                        # st.write('정상 데이터 평균 점수가 낮은 순서로 추천')
+                        updated_json = response.json() # NIPA 서버에서 학습한 데이터를 json으로 response 
+                        # st.write(updated_json)
+                        zero_df = pd.DataFrame(updated_json['json_zero'])
+                        zero_df = zero_df.sort_values('novelty_mean_score', ascending=True)
+                        one_df = pd.DataFrame(updated_json['json_one'])
+                        one_df = one_df.sort_values('anomaly_mean_score', ascending=True)
+                        
+                        col1, col2 = st.columns(2) # 이상탐지 모델 결과 시각화
+                        with col1:
+                            st.write('정상 데이터', zero_df)
+                        with col2:
+                            st.write('이상 데이터', one_df)
+                        score_df = pd.DataFrame(updated_json['json_score'])
+                        st.write('평균 점수가 낮은 순서로 시각화')
+                        for idx, model_name in enumerate(zero_df['model_name']): 
+                            st.write(model_name)
+                            st.line_chart(score_df[model_name])
+
+                    # end_time = time.time()
+                    # execution_time = end_time - start_time
+                    # minutes, seconds = divmod(execution_time, 60)
+                    # print(f"코드 실행 시간: {int(minutes)}분 {seconds:.2f}초")
+                    ray.shutdown() # 머신러닝 모델 분산 학습 종료
