@@ -98,3 +98,11 @@ with st.spinner('Wait for it...'):
                 updated_df = df[df[target_feture] != label_to_drop]
         except ValueError:
             st.write('1개 이상 데이터가 남아있어야 합니다.')
+
+        # 데이터 전처리된 데이터 출력
+        if updated_df is not None: 
+            st.subheader('데이터 전처리')
+            st.dataframe(updated_df)
+        
+        if st.sidebar.button("초기화"):
+            st.cache_resource.clear()
