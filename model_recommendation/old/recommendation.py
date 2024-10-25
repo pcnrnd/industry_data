@@ -84,3 +84,8 @@ with st.spinner('Wait for it...'):
                 sample_df = pd.DataFrame({'Label': ['Select Label Column'], # Sample Data
                                         'Counts': ['Select Label Column']})
                 st.write(sample_df)
+
+        # 선택한 Column 제거   
+        if data_to_drop:
+            for data in data_to_drop:
+                updated_df = df.drop(data_to_drop, axis=1)
