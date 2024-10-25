@@ -35,8 +35,10 @@ option = st.sidebar.selectbox(
     '머신러닝 유형 선택', ('분류', '이상탐지', '회귀'))
 connecton_option = st.sidebar.selectbox(
     'Select how to upload data', ('File_upload', 'DB_connection'))
+
 uploaded_file = None
 df = None
+
 if connecton_option == 'File_upload':
     uploaded_file = st.sidebar.file_uploader("csv file upload", type="csv") # 파일 업로드
     if uploaded_file:
@@ -270,4 +272,4 @@ with st.spinner('Wait for it...'):
                     # execution_time = end_time - start_time
                     # minutes, seconds = divmod(execution_time, 60)
                     # print(f"코드 실행 시간: {int(minutes)}분 {seconds:.2f}초")
-                    ray.shutdown() # 머신러닝 모델 분산 학습 종료
+                    # ray.shutdown() # 머신러닝 모델 분산 학습 종료
