@@ -1,6 +1,6 @@
 # 분류모델, 이상탐지 모델 
 # uvicorn main:app --reload
-# uvicorn main:app --reload --port 8001
+# uvicorn main:app --reload --port 8001 / 현재 streamlit 과 8001 port로 연결되어 있음
 from fastapi import FastAPI, Request
 from fastapi.responses import JSONResponse
 from io import StringIO
@@ -38,6 +38,8 @@ async def new_clf(request: Request):
     reg_compare = compare_clf_models(df, target, n_trials=5)
     dumps_data = json.dumps(reg_compare)
     print('result_data: ', dumps_data)
+    # with open('data.json', 'w') as json_file:
+    #     json.dump(dumps_data, json_file, indent=4)
 
     return JSONResponse(content={'result': dumps_data})
 

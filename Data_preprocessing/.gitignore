@@ -6,3 +6,4 @@ log
 .venv
 exhdd
 *.csv
+database

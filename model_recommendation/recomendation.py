@@ -22,6 +22,9 @@ from lib.prepro import Preprocessing
 from database.connector import Database # , SelectTB
 from io import StringIO
 import time
+import numpy as np
+import plotly.express as px
+
 
 # import matplotlib.pyplot as plt
 # import seaborn as sns
@@ -93,7 +96,7 @@ with st.spinner('Wait for it...'):
             else:
                 template.sample_df()
 
-        # LaberEncooding
+  
         if data_for_labelencoding:
             prepro = Preprocessing()
             if updated_df is None:
@@ -103,12 +106,12 @@ with st.spinner('Wait for it...'):
             if updated_df is not None:
                 updated_df = prepro.encoded_df(updated_df, data_for_labelencoding[0])
 
-        # 선택한 Column 제거   
+       
         if data_to_drop:
             for data in data_to_drop:
                 updated_df = df.drop(data_to_drop, axis=1)
 
-        # 선택한 Target Data 제거
+     
         try:
             if label_to_drop:
                 target_feture = target_feture[0]
@@ -161,115 +164,191 @@ with st.spinner('Wait for it...'):
 
                         concat_df = pd.concat([accuracy_best_df, recall_best_df, precision_best_df, f1score_best_df], axis=1)
                         sorted_concat_df = concat_df.sort_values(by='f1_weighted', ascending=False)
-                        col1, col2 = st.columns(2)
-                        with col1:
-                            # st.scatter_chart(sorted_concat_df.set_index('accuracy'))
-                            st.scatter_chart(sorted_concat_df)
-                        with col2:
-                            st.dataframe(sorted_concat_df, use_container_width=True)
 
-                        template.print_best_result(
-                            'Best_accuracy', 'Best_recall', 'Best_precision', 'Best_f1_score',
-                            accuracy_best_df.sort_values(by='accuracy', ascending=False), 
-                            recall_best_df.sort_values(by='recall', ascending=False), 
-                            precision_best_df.sort_values(by='precision', ascending=False), 
-                            f1score_best_df.sort_values(by='f1_weighted', ascending=False)
-                        )
+                        # 모델 추천
+                        st.title('Augmented Analysis')
+                        st.line_chart(sorted_concat_df)
 
-                        template.print_trial_result(
-                            'Trial_accuracy', 'Trial_recall', 'Trial_precision', 'Trial_f1_score',
-                            accuracy_trial_df, 
-                            recall_trial_df, 
-                            precision_trial_df, 
-                            f1score_trial_df
-                        )
-                        end_time = time.time()
-                        execution_time = end_time - start_time  # 실행 시간 계산
-                        print(f"코드 실행 시간: {execution_time} 초")
-                    else:
-                        st.write("Error:", response.status_code)
+                        st.subheader('Model Recommendations')
+                        st.dataframe(sorted_concat_df, use_container_width=True)
+                        
+
+                        data = updated_df
+                        # 데이터 유형 확인
+                        # data_types = data.dtypes
+
+                        # 수치형 데이터 확인
+                        numeric_cols = data.select_dtypes(include=[np.number]).columns.tolist()
+                        # 범주형 데이터 확인
+                        categorical_cols = data.select_dtypes(include=['object']).columns.tolist()
+
+                        preprocessing_recommendations = []
+
+                        # 수치형 데이터에 대한 전처리 기법 추천
+                        for col in numeric_cols:
+                            preprocessing_recommendations.append({
+                                'Column': col,
+                                'Recommended Preprocessing 1': 'Normalization (Min-Max Scaling)',
+                                'Recommended Preprocessing 2': 'Standardization (Z-score)',
+                                'Recommended Preprocessing 3': 'Outlier Detection (IQR method)'
+                            })
+
+                        # 범주형 데이터에 대한 전처리 기법 추천
+                        for col in categorical_cols:
+                            preprocessing_recommendations.append({
+                                'Column': col,
+                                'Recommended Preprocessing 1': 'One-Hot Encoding',
+                                'Recommended Preprocessing 2': 'Label Encoding',
+                                'Recommended Preprocessing 3': 'Handling Missing Values (Imputation)'
+                            })
+
+                        # 추천 데이터프레임으로 변환
+                        prepro_recommendations_df = pd.DataFrame(preprocessing_recommendations)
+
+                        # 결과를 Streamlit으로 표시
+                        st.subheader("Recommended preprocessing techniques for each column")
+                        st.dataframe(prepro_recommendations_df, use_container_width=True)
+
+
+                        # 시각화 추천 데이터프레임 생성
+                        visualization_recommendations = []
+
+                        for col in numeric_cols:
+                            visualization_recommendations.append({'Column': col, 
+                                                                'Recommended Visualizations1': 'Histogram',
+                                                                'Recommended Visualizations2': 'Bar chart',
+                                                                'Recommended Visualizations3': 'Box plot'})
+
+                        for col in categorical_cols:
+                            visualization_recommendations.append({'Column': col, 
+                                                                'Recommended Visualizations1': 'Bar chart',
+                                                                    'Recommended Visualizations2': 'Pie chart',})
+
+                        # 추천 데이터프레임으로 변환
+                        vis_recommendations_df = pd.DataFrame(visualization_recommendations)
+
+                        st.subheader("Recommended visualization charts for each column")
+                        st.dataframe(vis_recommendations_df, use_container_width=True)
+                        reset_df = sorted_concat_df.reset_index()
+                        concat_recommendation = pd.DataFrame([reset_df.iloc[0, 0], prepro_recommendations_df.iloc[0, 1], vis_recommendations_df.iloc[0, 1]],  ['Model', 'Preprocessing', 'Visualizations'])
+                        # concat_recommendation.columns = ['Model', 'Preprocessing', 'Visualization']
+                        st.subheader('Recommended Results')
+                        st.dataframe(concat_recommendation.T, use_container_width=True)
+
+
+
+
+                    
+#                         col1, col2 = st.columns(2)
+#                         with col1:
+#                             # st.scatter_chart(sorted_concat_df.set_index('accuracy'))
+#                             st.scatter_chart(sorted_concat_df)
+#                         with col2:
+#                             st.dataframe(sorted_concat_df, use_container_width=True)
+
+#                         template.print_best_result(
+#                             'Best_accuracy', 'Best_recall', 'Best_precision', 'Best_f1_score',
+#                             accuracy_best_df.sort_values(by='accuracy', ascending=False), 
+#                             recall_best_df.sort_values(by='recall', ascending=False), 
+#                             precision_best_df.sort_values(by='precision', ascending=False), 
+#                             f1score_best_df.sort_values(by='f1_weighted', ascending=False)
+#                         )
+
+#                         template.print_trial_result(
+#                             'Trial_accuracy', 'Trial_recall', 'Trial_precision', 'Trial_f1_score',
+#                             accuracy_trial_df, 
+#                             recall_trial_df, 
+#                             precision_trial_df, 
+#                             f1score_trial_df
+#                         )
+#                         end_time = time.time()
+#                         execution_time = end_time - start_time  # 실행 시간 계산
+#                         print(f"코드 실행 시간: {execution_time} 초")
+#                     else:
+#                         st.write("Error:", response.status_code)
           
                         
-            if option == '회귀':
-                st.subheader('머신러닝 학습 결과')
-                with st.spinner('Wait for it...'):
-                    if updated_df is None:
-                        updated_df = df   
+#             if option == '회귀':
+#                 st.subheader('머신러닝 학습 결과')
+#                 with st.spinner('Wait for it...'):
+#                     if updated_df is None:
+#                         updated_df = df   
 
-                    json_data = updated_df.to_json() # pandas DataFrame를 json 형태로 변환
-                    data_dump = json.dumps({'json_data':json_data, 'target': target_feture}) # 학습 데이터, Target Data 객체를 문자열로 직렬화(serialize)
-                    data = json.loads(data_dump) # json을 파이썬 객체로 변환
+#                     json_data = updated_df.to_json() # pandas DataFrame를 json 형태로 변환
+#                     data_dump = json.dumps({'json_data':json_data, 'target': target_feture}) # 학습 데이터, Target Data 객체를 문자열로 직렬화(serialize)
+#                     data = json.loads(data_dump) # json을 파이썬 객체로 변환
 
-                    response = requests.post('http://127.0.0.1:8001/new_reg', json=data) 
+#                     response = requests.post('http://127.0.0.1:8001/new_reg', json=data) 
                      
-                    if response.status_code == 200: 
-                        json_data = response.json() # NIPA 서버에서 학습한 데이터를 json으로 response 
-                        # model_compare_clf = json_data['result']
-                        data = json.loads(json_data['result'])
-                        # st.write(data)
+#                     if response.status_code == 200: 
+#                         json_data = response.json() # NIPA 서버에서 학습한 데이터를 json으로 response 
+#                         # model_compare_clf = json_data['result']
+#                         data = json.loads(json_data['result'])
+#                         # st.write(data)
 
-                        # st.write(data)
-                        mse_best_df = pd.read_json(StringIO(data['0']['best'])) # mse_best_df
-                        mse_trial_df = pd.read_json(StringIO(data['0']['trial'])) # mse_trial_df
-                        mae_best_df = pd.read_json(StringIO(data['1']['best'])) # mae_best_df
-                        mae_trial_df = pd.read_json(StringIO(data['1']['trial'])) # mae_trial_df
+#                         # st.write(data)
+#                         mse_best_df = pd.read_json(StringIO(data['0']['best'])) # mse_best_df
+#                         mse_trial_df = pd.read_json(StringIO(data['0']['trial'])) # mse_trial_df
+#                         mae_best_df = pd.read_json(StringIO(data['1']['best'])) # mae_best_df
+#                         mae_trial_df = pd.read_json(StringIO(data['1']['trial'])) # mae_trial_df
 
-                        concat_reg_df = pd.concat([mse_best_df, mae_best_df], axis=1)
-                        sorted_concat_reg_df = concat_reg_df.sort_values('neg_mean_squared_error', ascending=False)
-                        col1, col2 = st.columns(2)
-                        with col1:
-                            st.scatter_chart(concat_reg_df)
-                        with col2:
-                            st.dataframe(concat_reg_df, use_container_width=True)
+#                         concat_reg_df = pd.concat([mse_best_df, mae_best_df], axis=1)
+#                         sorted_concat_reg_df = concat_reg_df.sort_values('neg_mean_squared_error', ascending=False)
+#                         col1, col2 = st.columns(2)
+#                         with col1:
+#                             st.scatter_chart(concat_reg_df)
+#                         with col2:
+#                             st.dataframe(concat_reg_df, use_container_width=True)
 
-                        template.print_reg_best_result(
-                            'Best_mean_squared_error', 'Best_mean_absolute_error',
-                            mse_best_df.sort_values(by='neg_mean_squared_error', ascending=False), 
-                            mae_best_df.sort_values(by='neg_mean_absolute_error', ascending=False)
-                        )
+#                         template.print_reg_best_result(
+#                             'Best_mean_squared_error', 'Best_mean_absolute_error',
+#                             mse_best_df.sort_values(by='neg_mean_squared_error', ascending=False), 
+#                             mae_best_df.sort_values(by='neg_mean_absolute_error', ascending=False)
+#                         )
 
-                        template.print_reg_trial_result(
-                            'Trial_mean_squared_error', 'Trial_mean_absolute_error',
-                            mse_trial_df, mae_trial_df
-                        )
-                        end_time = time.time()
-                        execution_time = end_time - start_time  # 실행 시간 계산
-                        print(f"코드 실행 시간: {execution_time} 초")
-                    else:
-                        st.write("Error:", response.status_code)
+#                         template.print_reg_trial_result(
+#                             'Trial_mean_squared_error', 'Trial_mean_absolute_error',
+#                             mse_trial_df, mae_trial_df
+#                         )
+#                         end_time = time.time()
+#                         execution_time = end_time - start_time  # 실행 시간 계산
+#                         print(f"코드 실행 시간: {execution_time} 초")
+#                     else:
+#                         st.write("Error:", response.status_code)
            
-            if option == '이상탐지':
-                st.subheader('머신러닝 학습 결과')
-                with st.spinner('Wait for it...'):
-                    if updated_df is None:
-                        updated_df = df
-                    json_data = updated_df.to_json() # pandas DataFrame를 json 형태로 변환
-                    data = json.loads(json_data) # json을 파이썬 객체로 변환
+#             if option == '이상탐지':
+#                 st.subheader('머신러닝 학습 결과')
+#                 with st.spinner('Wait for it...'):
+#                     if updated_df is None:
+#                         updated_df = df
+#                     json_data = updated_df.to_json() # pandas DataFrame를 json 형태로 변환
+#                     data = json.loads(json_data) # json을 파이썬 객체로 변환
                     
-                    response = requests.post('http://127.0.0.1:8001/anomaly', json=data)  
+#                     response = requests.post('http://127.0.0.1:8001/anomaly', json=data)  
 
-                    if response.status_code == 200:
-                        # st.write('정상 데이터 평균 점수가 낮은 순서로 추천')
-                        updated_json = response.json() # NIPA 서버에서 학습한 데이터를 json으로 response 
-                        # st.write(updated_json)
-                        zero_df = pd.DataFrame(updated_json['json_zero'])
-                        zero_df = zero_df.sort_values('novelty_mean_score', ascending=True)
-                        one_df = pd.DataFrame(updated_json['json_one'])
-                        one_df = one_df.sort_values('anomaly_mean_score', ascending=True)
+#                     if response.status_code == 200:
+#                         # st.write('정상 데이터 평균 점수가 낮은 순서로 추천')
+#                         updated_json = response.json() # NIPA 서버에서 학습한 데이터를 json으로 response 
+#                         # st.write(updated_json)
+#                         zero_df = pd.DataFrame(updated_json['json_zero'])
+#                         zero_df = zero_df.sort_values('novelty_mean_score', ascending=True)
+#                         one_df = pd.DataFrame(updated_json['json_one'])
+#                         one_df = one_df.sort_values('anomaly_mean_score', ascending=True)
                         
-                        col1, col2 = st.columns(2) # 이상탐지 모델 결과 시각화
-                        with col1:
-                            st.write('정상 데이터', zero_df)
-                        with col2:
-                            st.write('이상 데이터', one_df)
-                        score_df = pd.DataFrame(updated_json['json_score'])
-                        st.write('평균 점수가 낮은 순서로 시각화')
-                        for idx, model_name in enumerate(zero_df['model_name']): 
-                            st.write(model_name)
-                            st.line_chart(score_df[model_name])
+#                         col1, col2 = st.columns(2) # 이상탐지 모델 결과 시각화
+#                         with col1:
+#                             st.write('정상 데이터', zero_df)
+#                         with col2:
+#                             st.write('이상 데이터', one_df)
+#                         score_df = pd.DataFrame(updated_json['json_score'])
+#                         st.write('평균 점수가 낮은 순서로 시각화')
+#                         for idx, model_name in enumerate(zero_df['model_name']): 
+#                             st.write(model_name)
+#                             st.line_chart(score_df[model_name])
 
-                    # end_time = time.time()
-                    # execution_time = end_time - start_time
-                    # minutes, seconds = divmod(execution_time, 60)
-                    # print(f"코드 실행 시간: {int(minutes)}분 {seconds:.2f}초")
+# #######
+#                     end_time = time.time()
+#                     execution_time = end_time - start_time
+#                     minutes, seconds = divmod(execution_time, 60)
+#                     print(f"코드 실행 시간: {int(minutes)}분 {seconds:.2f}초")
                     # ray.shutdown() # 머신러닝 모델 분산 학습 종료

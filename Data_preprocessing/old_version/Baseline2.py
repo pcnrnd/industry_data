@@ -25,17 +25,36 @@ def format_bytes(size): # 파일 용량 계산
     # return f"{size:.5f} {volum_labels[n]}"
     return f"{size} {volum_labels[n]}"
 
-def normalize_json(json_meta_data): # json 형태의 데이터를 DataFrame으로 변환
-    '''
-    json데이터를 pandas DataFrame로 변경하는 함수
-    '''
+# def normalize_json(json_meta_data): # json 형태의 데이터를 DataFrame으로 변환
+#     '''
+#     json데이터를 pandas DataFrame로 변경하는 함수
+#     '''
+#     json_df = []
+#     for file in tqdm(json_meta_data):
+#         with open(file, 'r', encoding='utf-8') as f:
+#             data = json.load(f)
+#             data_df = pd.json_normalize(data)
+#             json_df.append(data_df)
+#     return json_df
+
+def normalize_json(json_meta_data):
+    """
+    json 데이터를 pandas DataFrame으로 변환하는 함수
+    """
     json_df = []
-    for file in tqdm(json_meta_data):
-        with open(file, 'r', encoding='utf-8') as f:
-            data = json.load(f)
-            data_df = pd.json_normalize(data)
-            json_df.append(data_df)
+    for file in tqdm(json_meta_data, desc="JSON 파일 처리"):
+        try:
+            with open(file, 'r', encoding='utf-8') as f:
+                data = json.load(f)
+                if data:  # JSON 파일이 비어 있지 않은 경우만 추가
+                    data_df = pd.json_normalize(data)
+                    json_df.append(data_df)
+                else:
+                    logging.warning(f"파일 {file}에 데이터가 비어 있습니다.")
+        except Exception as e:
+            logging.error(f"파일 {file}을(를) 읽는 중 오류 발생: {e}")
     return json_df
+
 
 def log_system_resources():
     '''
@@ -93,22 +112,42 @@ img_paths = [img_path for sublist in img_total_list for img_path in sublist]
 
 # 이미지 데이터에서 메타 데이터 추출
 logging.info('메타 데이터 추출 시작..') # 데이터 처리 및 데이터프레임 생성
-df = pd.DataFrame({'file_id': [img_paths[n].split('.')[-2].split('/')[-1] for n in range(len(img_paths))], # 이미지 데이터 경로에서 파일명으로 되어있는 id 분리
-                    'full_path': img_paths, # 전체 이미지 데이터 경로 
-                    'folder': [img_paths[n].split('.')[-2].split('/')[-2] for n in range(len(img_paths))], # 폴더명 추출
-                    'file_name': [path.split('/')[-1] for path in img_paths],
-                    'file_size': [os.path.getsize(path) for path in tqdm(img_paths)], # 각각의 파일 크기 
-                    }) 
+# df = pd.DataFrame({'file_id': [img_paths[n].split('.')[-2].split('/')[-1] for n in range(len(img_paths))], # 이미지 데이터 경로에서 파일명으로 되어있는 id 분리
+#                     'full_path': img_paths, # 전체 이미지 데이터 경로 
+#                     'folder': [img_paths[n].split('.')[-2].split('/')[-2] for n in range(len(img_paths))], # 폴더명 추출
+#                     'file_name': [path.split('/')[-1] for path in img_paths],
+#                     'file_size': [os.path.getsize(path) for path in tqdm(img_paths)], # 각각의 파일 크기 
+#                     }) 
+
+# img_paths = [img_path for folder in img_dir_list for img_path in glob.glob(os.path.join(folder, '*'))]
+
+# DataFrame 생성
+df = pd.DataFrame({
+    'file_id': [os.path.splitext(os.path.basename(path))[0] for path in img_paths],  # 파일명으로 ID 추출
+    'full_path': img_paths,  # 전체 이미지 경로
+    'folder': [os.path.basename(os.path.dirname(path)) for path in img_paths],  # 폴더명 추출
+    'file_name': [os.path.basename(path) for path in img_paths],  # 파일명 추출
+    'file_size': [os.path.getsize(path) for path in tqdm(img_paths, desc="파일 크기 계산")],  # 파일 크기 계산
+})
 
 # label_data = glob.glob('./data/label_data/*.json') # 메타 데이터 경로
-label_data = glob.glob('../exhdd/industry_data/264.건설 모래 품질 관리데이터/01-1.정식개방데이터/Training/02.라벨링데이터/*.json' ) # 메타 데이터 경로
-label_df = pd.DataFrame({"file_id": [label.split('.')[-2].split('/')[-1] for label in label_data],
-                        "label_paths": label_data,})
-logging.info('메타 데이터 추출 완료')
+# label_data = glob.glob('../exhdd/industry_data/264.건설 모래 품질 관리데이터/01-1.정식개방데이터/Training/02.라벨링데이터/*' ) # 메타 데이터 경로
+# json_path = [json_path for json_path in label_data if not json_path.endswith('.zip')]
+# label_data = [json_label+'/*.json' for json_label in glob.glob(json_path[i]) for i in range(len(json_path))]
 
+label_data = glob.glob('../exhdd/industry_data/264.건설 모래 품질 관리데이터/01-1.정식개방데이터/Training/02.라벨링데이터/*')
+
+# .zip 파일 제외하고 JSON 파일 경로 수집
+json_folders = [folder for folder in label_data]
+json_paths = [json_file for json_folder in json_folders for json_file in glob.glob(f'{json_folder}/*.json') if not json_file.endswith('.zip')]
+# print(json_paths) # '../exhdd/industry_data/264.건설 모래 품질 관리데이터/01-1.정식개방데이터/Training/02.라벨링데이터\\TL_2.모래위험광물분류\\007231.json
+label_df = pd.DataFrame({"file_id": [label.split('.')[-2].split('/')[-1] for label in json_paths],
+                        "label_paths": json_paths})
+print(label_df)
+
+logging.info('메타 데이터 추출 완료')
 logging.info('테이블 생성 시작..')
 json_meta_data = normalize_json(label_df['label_paths']) # json 데이터를 pandas DataFrame로 변경
-
 # json에서 pandas DataFrame로 변환한 여러 데이터를 하나의 DataFrame로 concat해서 종합
 concat_df = pd.concat(json_meta_data, ignore_index=True) 
 
@@ -179,7 +218,11 @@ logging.info('데이터베이스 연결 종료')
 # 전체 디렉토리 확인
 current_directory = Path.cwd() 
 # tree 명령어 실행 (현재 디렉토리만 포함)
-total_dir = subprocess.run(['tree', '-d', current_directory], text=True, capture_output=True, check=True)
+# total_dir = subprocess.run(['tree', '-d', current_directory], text=True, capture_output=True, check=True)
+
+total_dir = subprocess.run(['cmd', '/c', 'tree', current_directory], text=True, capture_output=True, check=True)
+
+
 # 실행 결과를 로그 파일에 저장
 if total_dir.returncode == 0:
     logging.info("전체 디렉토리 구조:\n%s", total_dir.stdout)
