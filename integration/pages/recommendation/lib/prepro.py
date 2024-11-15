@@ -56,10 +56,6 @@ class Preprocessing:
             best_df[n] = self.is_best_trial_df(result[n]['best_trial']).to_json()
             trial_df[n] = self.is_all_trials_df(result[n]['trials']).to_json()
 
-        # for n in range(0, len(result)):
-        #     best_df[n] = self.is_best_trial_df(result[n]['best_trial']).to_json()
-        #     trial_df[n] = self.is_all_trials_df(result[n]['trials']).to_json()
-
         return {'best_df': best_df, 'trial_df': trial_df}
     
     def make_dataframe(self, result):
