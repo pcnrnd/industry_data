@@ -6,3 +6,4 @@ uvicorn[standard]
 catboost
 xgboost
 optuna
+imblearn
