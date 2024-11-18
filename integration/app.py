@@ -4,14 +4,18 @@ import streamlit as st
 import os
 import sys
 
+sys.path.append(os.path.abspath('./pages/main/'))
 sys.path.append(os.path.abspath('./pages/recommendation/'))
 sys.path.append(os.path.abspath('./pages/augmentation/'))
 
 pages = {
-    "Test page1": [
+    "Home": [
+        st.Page('./pages/main/main.py', title='main')
+    ],
+    "Model": [
         st.Page('./pages/recommendation/recomendation.py', title='Model Recommendation'),
     ],
-    'Test page2': [
+    'Data': [
         st.Page('./pages/augmentation/gene.py', title='Data Augmentation')
     ]
 }
