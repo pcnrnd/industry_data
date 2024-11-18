@@ -1,9 +1,6 @@
 pandas
-plotly
-fastapi
 scikit-learn
+fastapi
 uvicorn[standard]
-catboost
-xgboost
 optuna
 imbalanced-learn
