@@ -4,7 +4,7 @@ from sklearn.tree import DecisionTreeRegressor
 
 from catboost import CatBoostRegressor
 from xgboost import XGBRegressor
-import lightgbm as lgb
+# import lightgbm as lgb
 
 from sklearn.linear_model import Ridge, Lasso, ElasticNet
 

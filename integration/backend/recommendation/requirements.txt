@@ -1,0 +1,7 @@
+pandas
+fastapi
+scikit-learn
+uvicorn[standard]
+catboost
+xgboost
+optuna
