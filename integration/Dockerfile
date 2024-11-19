@@ -21,4 +21,4 @@ ENV STREAMLIT_PORT="8501"
 
 # FastAPI 서버와 Streamlit 서버를 동시에 실행할 수 있도록 설정
 # 쉘 명령어로 FastAPI와 Streamlit을 백그라운드에서 실행하는 명령어 작성
-CMD ["sh", "-c", "uvicorn app.main:app --host $FASTAPI_HOST --port $FASTAPI_PORT & streamlit run streamlit_app/page1.py --server.address $STREAMLIT_HOST --server.port $STREAMLIT_PORT"]
+CMD ["sh", "-c", "uvicorn backend.main:app --host $FASTAPI_HOST --port $FASTAPI_PORT & streamlit run front/app.py --server.address $STREAMLIT_HOST --server.port $STREAMLIT_PORT"]
