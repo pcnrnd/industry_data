@@ -83,10 +83,10 @@ with st.spinner('Wait for it...'): # 로딩이 완료되지 않으면 "Wair for 
         with tab_label_counts: # Target data counts tab
             st.write("Label counts")
             val_counts_df = None
-            if target_feature:            
+            if target_feature:  
                 val_counts = df[target_feature].value_counts().reset_index()
                 val_counts_df = pd.DataFrame({'Labels': val_counts.iloc[:, 0],
-                                            'Counts': val_counts.iloc[:, 1]})
+                                                'Counts': val_counts.iloc[:, 1]})
                 
                 st.dataframe(val_counts_df, use_container_width=True)
                 # Target Data 설정해야 제거할 Label 선택 가능
@@ -151,7 +151,7 @@ with st.spinner('Wait for it...'): # 로딩이 완료되지 않으면 "Wair for 
         sampling_df = None
         if updated_df is not None: 
             st.subheader('데이터 전처리')
-            st.dataframe(updated_df)
+            st.dataframe(updated_df, use_container_width=True)
 
 
 #################### sampling strategy
@@ -190,17 +190,23 @@ with st.spinner('Wait for it...'): # 로딩이 완료되지 않으면 "Wair for 
                         # grid_result = make_grid(selected_feature_df, target_feature) 
                         # sampling_strategy = make_ratio(grid_result) 
                     if selected_feature_df is None: # Binary class인 경우
+                        val_counts = updated_df[target_feature].value_counts().reset_index()
+                        val_counts_df = pd.DataFrame({'Labels': val_counts.iloc[:, 0],
+                                                'Counts': val_counts.iloc[:, 1]})
+                        
                         label_df = val_counts_df[val_counts_df['Counts'] == min(val_counts_df['Counts'])]           # Binary class: 가장 작은 값 선택
                         sampling_strategy = {label_df['Labels'].iloc[0]: round(thresh)}                             # 기본 설정값 2:1 비율, threshold 설정 값에 따라 조절 가능
+
                         
     #################### Oversampling Start
                     # 데이터 증강은 일반 지도학습과 같은 절차로 진행되기 때문에, 속성값을 X인 입력변수로, target을 y인 목표 변수로 설정
-                    
+            
                     X, y = updated_df.drop(target, axis=1), updated_df[target] 
                     sampling_df = None # sampling_df 초기화
                     X_over_resampled, y_over_resampled = SMOTE(sampling_strategy=sampling_strategy).fit_resample(X, y)          # sampling_strategy 옵션: 'auto', sampling_strategy
                     sampling_df = X_over_resampled
                     sampling_df[target] = y_over_resampled
+                    
 
     #################### 증강된 데이터 전, 후 비교 출력
                     # st.write(target)
