@@ -1,17 +1,18 @@
-# fastapi 서버 실행 명령어: uvicorn main:app --reload --port 8009 (port 번호 변경 시, gene.py에 있는 port 번호도 함께 수정)
-from fastapi import FastAPI, Request
+# fastapi 서버 실행 명령어: uvicorn main:router --reload --port 8009 (port 번호 변경 시, gene.py에 있는 port 번호도 함께 수정)
+from fastapi import Request, APIRouter
 from fastapi.responses import JSONResponse
 import pandas as pd
 import json
 from services.sampling_lib import *
 from io import StringIO
-app = FastAPI()
 
-@app.get('/')
+router = APIRouter()
+
+@router.get('/')
 def main():
     return 'main'
 
-@app.post('/aug/')
+@router.post('/aug/')
 async def clf_test(request: Request): # dict
     data = await request.json()
 
@@ -25,7 +26,7 @@ async def clf_test(request: Request): # dict
     
     return JSONResponse(content={'result': result_data})
 
-@app.post('/compare')
+@router.post('/compare')
 async def compare_aug_data(request: Request):
     data = await request.json()
     before_data = data['before_data']

@@ -1,4 +1,4 @@
-from fastapi import FastAPI, Request
+from fastapi import FastAPI, Request, APIRouter
 from fastapi.responses import JSONResponse
 from services.sampling_lib import *
 from io import StringIO
@@ -6,9 +6,9 @@ import pandas as pd
 import json
 
 
-app = FastAPI()
+router = APIRouter()
 
-@app.post('/aug/')
+@router.post('/aug/')
 async def clf_test(request: Request): # dict
     data = await request.json()
 
@@ -22,7 +22,7 @@ async def clf_test(request: Request): # dict
     
     return JSONResponse(content={'result': result_data})
 
-@app.post('/compare')
+@router.post('/compare')
 async def compare_aug_data(request: Request):
     data = await request.json()
     before_data = data['before_data']
