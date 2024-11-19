@@ -181,7 +181,7 @@ with st.spinner('Wait for it...'): # 로딩이 완료되지 않으면 "Wair for 
                         json_data = selected_feature_df.to_json() 
                         data_dump = json.dumps({'json_data':json_data, 'target': target_feature})
                         data = json.loads(data_dump) 
-                        response = requests.post('http://industry_backend:8000/aug', json=data) # 127.0.0.1
+                        response = requests.post('http://industry_backend:8000/augmentation/aug', json=data) # 127.0.0.1
                         if response.status_code == 200: 
                             json_data = response.json() 
                             json_result = json_data['result'] 
@@ -212,7 +212,7 @@ with st.spinner('Wait for it...'): # 로딩이 완료되지 않으면 "Wair for 
                     compare_tab_data = {'before_data': df_before.to_json(), 'after_data': df_after.to_json()}
                     compare_dump_data = json.dumps(compare_tab_data)
                     compare_json_data = json.loads(compare_dump_data) 
-                    compare_response = requests.post('http://industry_backend:8000/compare', json=compare_json_data) # 127.0.0.1
+                    compare_response = requests.post('http://industry_backend:8000/augmentation/compare', json=compare_json_data) # 127.0.0.1
                     if compare_response.status_code == 200:
                         compare_response_data = compare_response.json()
                         compare_result_data = compare_response_data['compare_result'] 
