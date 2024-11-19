@@ -3,7 +3,7 @@ from fastapi import FastAPI, Request
 from fastapi.responses import JSONResponse
 import pandas as pd
 import json
-from gene_lib.sampling_lib import *
+from services.sampling_lib import *
 from io import StringIO
 app = FastAPI()
 
