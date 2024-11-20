@@ -45,7 +45,8 @@ def eda_null_info(df): # Null 값 확인
                     })
     info_df.reset_index(inplace=True)
     # st.write(info_df.iloc[:, 1:].astype(str))
-    st.dataframe(info_df.iloc[:, 1:].astype(str), use_container_width=True)
+    st.dataframe(info_df.iloc[:, 1:].astype(str), use_container_width=True) # data frame index 가 컬럼에 있어서 제외
+
 
 def eda_label_couts(target_label_counts): # 타겟 데이터 분포 확인
     val_counts_df = pd.DataFrame({'Labels': target_label_counts.iloc[:, 0],

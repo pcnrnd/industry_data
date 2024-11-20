@@ -15,6 +15,7 @@ from augmentation.gene_lib.sampling_lib import *
 from sklearn.preprocessing import LabelEncoder
 from imblearn.over_sampling import SMOTE 
 from io import StringIO
+import plotly.express as px
 import time
 
 st.set_page_config( # 레이아웃 설정
@@ -78,22 +79,31 @@ with st.spinner('Wait for it...'): # 로딩이 완료되지 않으면 "Wair for 
         with tab_null_info: # null information tab
             eda_null_info(df) # tabs > tab_vis (디렉토리에 있는 경로 확인)
 
+        # Target counts
         label_to_drop = ""
         val_counts_df = None
         with tab_label_counts: # Target data counts tab
             st.write("Label counts")
             val_counts_df = None
             if target_feature:  
-                val_counts = df[target_feature].value_counts().reset_index()
-                val_counts_df = pd.DataFrame({'Labels': val_counts.iloc[:, 0],
-                                                'Counts': val_counts.iloc[:, 1]})
-                
-                st.dataframe(val_counts_df, use_container_width=True)
-                # Target Data 설정해야 제거할 Label 선택 가능
-                label_to_drop = st.sidebar.multiselect('제거할 Target 데이터 선택', options=val_counts_df.iloc[:, 0])
-                bar_data = val_counts_df
-                bar_data.index = val_counts_df['Labels']
-                st.bar_chart(bar_data['Counts'])
+                col1, col2 = st.columns(2)
+                with col1:
+                    val_counts = df[target_feature].value_counts().reset_index()
+                    val_counts_df = pd.DataFrame({'Labels': val_counts.iloc[:, 0],
+                                                    'Counts': val_counts.iloc[:, 1]})
+                    
+                    st.dataframe(val_counts_df, use_container_width=True)
+                    # Target Data 설정해야 제거할 Label 선택 가능
+                    label_to_drop = st.sidebar.multiselect('제거할 Target 데이터 선택', options=val_counts_df.iloc[:, 0])
+                    bar_data = val_counts_df
+                    bar_data.index = val_counts_df['Labels']
+                    st.bar_chart(bar_data['Counts'])
+
+                with col2:
+                    pie_fig = px.pie(bar_data, values=bar_data['Counts'], names=bar_data['Labels'])
+                    st.plotly_chart(pie_fig)
+
+
             else:
                 sample_df = pd.DataFrame({'Label': ['Select Target Column'],
                                         'Counts': ['Select Target Column']})
