@@ -11,23 +11,38 @@ class PolarsDataFrame:
     def __init__(self):
         pass
 
+
+
     def get_all_file_paths(self, root_path):
-        paths = glob.glob(root_path)
-        img_dir_list = [path for path in paths if not path.endswith('.zip')]
-        file_paths = []
-        for root_dir in img_dir_list:
-            for dirpath, dirnames, filenames in os.walk(root_dir):
-                for filename in filenames:
-                    full_path = os.path.join(dirpath, filename)
-                    file_paths.append(full_path)
+        # glob를 사용하여 하위 디렉토리까지 검색
+        paths = glob.glob(os.path.join(root_path, '**'), recursive=True)
+        
+        # .zip 파일을 제외한 파일들만 필터링
+        file_paths = [path for path in paths if os.path.isfile(path) and not path.endswith('.zip')]
+        
         return file_paths
+    
+    # def get_all_file_paths(self, root_path):
+    #     paths = glob.glob(root_path)
+    #     img_dir_list = [path for path in paths if not path.endswith('.zip')]
+    #     file_paths = []
+    #     for root_dir in img_dir_list:
+    #         for dirpath, dirnames, filenames in os.walk(root_dir):
+    #             for filename in filenames:
+    #                 full_path = os.path.join(dirpath, filename)
+    #                 file_paths.append(full_path)
+    #     return file_paths
 
     def _extract_data(self, paths, extractor):
         with ThreadPoolExecutor() as executor:
             return list(executor.map(extractor, paths))
 
+
     def extract_file_id(self, paths):
-        return self._extract_data(paths, lambda path: os.path.splitext(os.path.basename(path))[0])
+        # 순차적인 ID 생성 (1, 2, 3, ...)
+        return list(range(1, len(paths) + 1))
+    # def extract_file_id(self, paths):
+    #     return self._extract_data(paths, lambda path: os.path.splitext(os.path.basename(path))[0])
 
     def extract_file_name(self, paths):
         return self._extract_data(paths, lambda path: os.path.basename(path))
