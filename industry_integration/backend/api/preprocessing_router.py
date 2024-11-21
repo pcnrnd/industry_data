@@ -26,10 +26,22 @@ async def add_file_data(request: Request):
 
 @router.get('/show_tables')
 async def show_tables():
+    pf = PolarsDataFrame()
+
+    test_path = '../industry_data/industry_data/117.산업시설 열화상 CCTV 데이터/01.데이터/1.Training/원천데이터'
+    paths = pf.get_all_file_paths(test_path) # 모든 파일 데이터 경로 추출
+    df = pf.make_polars_dataframe(paths) # 추출한 경로 데이터프레임 생성
+    
+    con = duckdb.connect(database=':default:')
+    con.execute('DROP TABLE IF EXISTS sand_data')
+    con.execute('CREATE TABLE sand_data AS SELECT * FROM df')
+
+
+
     con = duckdb.connect(database=':dafault:')
     tables = con.execute('SHOW TABLES').fetchall()
     return {'tables': tables}
-
+    
 
 @router.get('/read_file_data')
 async def read_file_data(request: Request):
