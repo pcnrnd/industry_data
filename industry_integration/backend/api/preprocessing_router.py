@@ -13,11 +13,13 @@ async def add_file_data(request: Request):
     abs_path_of_file = data['abs_path']
     table_name = data['table_name']
 
+
     pf = PolarsDataFrame()
     paths = pf.get_all_file_paths(abs_path_of_file) # 모든 파일 데이터 경로 추출
     df = pf.make_polars_dataframe(paths) # 추출한 경로 데이터프레임 생성
     
     con = duckdb.connect(database=':default:')
+    con.execute(f'DROP TABLE IF EXISTS {table_name}')
     con.execute(f'CREATE TABLE {table_name} AS SELECT * FROM df')
 
 

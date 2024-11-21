@@ -6,7 +6,7 @@
 
 import streamlit as st
 import requests
-import duckdb
+
 
 # table_name = None
 # json_data = None
@@ -37,7 +37,20 @@ with st.form("path_and_tablee_name"):
             st.error(f"An error occurred: {e}")
 
 
-with st.form("path_and_tablee_name"):
-    st.write("Input path and tablee name")
+with st.form("Show tables"):
+    submitted = st.form_submit_button("Submit")
+    if submitted:
+        try:
+            response = requests.get('http://industry_backend:8000/preprocessing/show_tables')
+
+            # 응답 처리
+            if response.status_code == 200:
+                st.success("Data submitted successfully!")
+                st.json(response.json())  # API 응답 데이터 출력
+            else:
+                st.error(f"Failed to submit data: {response.status_code}")
+                st.write(response.text)  # 오류 메시지 출력
+        except Exception as e:
+            st.error(f"An error occurred: {e}")
 
 
