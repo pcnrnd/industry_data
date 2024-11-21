@@ -8,9 +8,6 @@ from io import StringIO
 
 router = APIRouter()
 
-@router.get('/')
-def main():
-    return 'main'
 
 @router.post('/aug/')
 async def clf_test(request: Request): # dict

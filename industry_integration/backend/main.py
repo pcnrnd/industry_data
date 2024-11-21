@@ -3,12 +3,14 @@ from fastapi import FastAPI, Request
 from fastapi.responses import JSONResponse
 from api.augmentation_router import router as augmentation_router
 from api.recommendation_router import router as recomendation_router
+from api.preprocessing_router import router as preprocessing_router
 
 app = FastAPI()
 
 app.include_router(augmentation_router, prefix="/augmentation", tags=['augmentation'])
 app.include_router(recomendation_router, prefix="/recommendation", tags=['recommendation'])
+app.include_router(preprocessing_router, prefix="/preprocessing", tags=['preprocessing'])
 
-app.get('.')
+app.get('/')
 def main():
     return "connection success!"
