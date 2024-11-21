@@ -6,6 +6,7 @@
 
 import streamlit as st
 import requests
+import duckdb
 
 # table_name = None
 # json_data = None
@@ -34,3 +35,9 @@ with st.form("path_and_tablee_name"):
                 st.write(response.text)  # 오류 메시지 출력
         except Exception as e:
             st.error(f"An error occurred: {e}")
+
+
+with st.form("path_and_tablee_name"):
+    st.write("Input path and tablee name")
+
+

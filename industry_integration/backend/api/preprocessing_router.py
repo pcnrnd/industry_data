@@ -20,9 +20,15 @@ async def add_file_data(request: Request):
     con = duckdb.connect(database=':default:')
     con.execute(f'CREATE TABLE {table_name} AS SELECT * FROM df')
 
-    con.close()
 
     return {'message': '데이터 저장 완료!'}
+
+@router.get('/show_tables')
+async def show_tables():
+    con = duckdb.connect(database=':dafault:')
+    tables = con.execute('SHOW TABLES').fetchall()
+    return {'tables': tables}
+
 
 @router.get('/read_file_data')
 async def read_file_data(request: Request):
@@ -32,9 +38,7 @@ async def read_file_data(request: Request):
     data = await request.json()
     table_name = data['table_name']
     
-    try:
-        con = duckdb.connect(database=':default:')
-        query_result = con.execute(f'SELECT * FROM {table_name}').fetchall()
-    finally:
-        con.close()
+    con = duckdb.connect(database=':default:')
+    query_result = con.execute(f'SELECT * FROM {table_name}').fetchall()
+
     return {'query_result': query_result}
