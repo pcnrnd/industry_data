@@ -6,3 +6,6 @@ catboost
 xgboost
 optuna
 imbalanced-learn
+polars
+duckdb
+pyarrow

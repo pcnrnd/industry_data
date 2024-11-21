@@ -9,6 +9,7 @@ COPY requirements.txt .
 COPY . /app
 
 # 필요한 패키지 설치
+RUN pip install --upgrade pip
 RUN pip install --no-cache-dir -r requirements.txt
 
 # FastAPI와 Streamlit의 포트를 오픈

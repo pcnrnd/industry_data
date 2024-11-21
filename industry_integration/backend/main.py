@@ -14,3 +14,7 @@ app.include_router(preprocessing_router, prefix="/preprocessing", tags=['preproc
 app.get('/')
 def main():
     return "connection success!"
+
+app.get('/test')
+def main():
+    return "connection success!"
