@@ -15,20 +15,9 @@ async def new_clf(request: Request):
     df = pd.read_json(StringIO(data['json_data']))
     target = data['target']
 
-    # if not ray.is_initialized():
-    #     ray.init()
-    # clf_compare = Classification(X=df, y=df[target]).train_clf()
-    # clf_models_data = ClassificationModels(df, target, n_trials=10).run_clf_models()
-    # prepro_data = Preprocessing().make_dict(clf_models_data)
-    # ray.shutdown()
-    # dumps_data = json.dumps(prepro_data)
-    # result_data = json.loads(dumps_data)
-    ###
     reg_compare = compare_clf_models(df, target, n_trials=5)
     dumps_data = json.dumps(reg_compare)
     print('result_data: ', dumps_data)
-    # with open('data.json', 'w') as json_file:
-    #     json.dump(dumps_data, json_file, indent=4)
 
     return JSONResponse(content={'result': dumps_data})
 
