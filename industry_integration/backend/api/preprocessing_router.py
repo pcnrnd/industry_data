@@ -37,6 +37,19 @@ def read_file_data(table_name: str):
     read unstructured data table
     '''
     con = duckdb.connect(database='./database.db')
-    query_result = con.execute(f'SELECT * FROM {table_name}').fetchall()
+    query_result = con.execute(f'SELECT * FROM "{table_name}"').fetchall()
 
-    return {'query_result': query_result}
+    try:
+        # 테이블 목록 조회
+        tables = con.execute("SHOW TABLES").fetchall()
+        table_names = [table[0] for table in tables]
+
+        if table_name not in table_names:
+            return {'error': f"Table '{table_name}' does not exist."}
+
+        # 테이블이 존재하면 데이터 조회
+        query_result = con.execute(f'SELECT * FROM "{table_name}"').fetchall()
+        return {'query_result': query_result}
+    
+    except Exception as e:
+        return {'error': f"Failed to execute query: {e}"}
