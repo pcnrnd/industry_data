@@ -1,5 +1,5 @@
 from fastapi import APIRouter, Request
-from services.dataframe import PolarsDataFrame
+from services.dataframe import PolarsDataFrame, PandasDataFrame
 import duckdb
 
 router = APIRouter()
@@ -14,14 +14,16 @@ async def add_file_data(request: Request):
     table_name = data['table_name']
 
 
-    pf = PolarsDataFrame()
-    paths = pf.get_all_file_paths(abs_path_of_file) # 모든 파일 데이터 경로 추출
-    df = pf.make_polars_dataframe(paths) # 추출한 경로 데이터프레임 생성
-    df_pandas = df.to_pandas()
+    # pf = PolarsDataFrame()
+    pd = PandasDataFrame()
+
+    paths = pd.get_all_file_paths(abs_path_of_file) # 모든 파일 데이터 경로 추출
+    df = pd.make_pandas_dataframe(paths) # 추출한 경로 데이터프레임 생성
+    # df_pandas = df.to_pandas()
     
     con = duckdb.connect(database='./database.db')
     con.execute(f'DROP TABLE IF EXISTS {table_name}')
-    con.execute(f'CREATE TABLE {table_name} AS SELECT * FROM df_pandas')
+    con.execute(f'CREATE TABLE "{table_name}" AS SELECT * FROM "{df}"')
 
     return {'message': '데이터 저장 완료!'}
 
