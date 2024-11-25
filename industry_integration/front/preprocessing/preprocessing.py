@@ -5,9 +5,24 @@
 # PATH_SAND_LABEL_DATA = './exhdd/industry_data/264.건설 모래 품질 관리데이터/01-1.정식개방데이터/Training/02.라벨링데이터/*'
 
 import streamlit as st
-import requests, glob, os
+import requests
+import glob
+import os
 
 st.set_page_config(layout='wide')
+
+
+with st.form('show_file_list'):
+    st.write('Show file list')
+
+    response = requests.get('http://industry_backend:8000/preprocessing/read_file_list')
+    if response.status_code == 200:
+        select_result = response.json()
+        st.json(select_result)
+        # st.selectbox('File list', (list(select_result)))
+    else:
+        st.error(f"Failed to submit data: {response.status_code}")
+        st.write(response.status_code)
 
 col1, col2 = st.columns(2)
 with col1:

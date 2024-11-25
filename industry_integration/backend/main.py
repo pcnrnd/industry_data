@@ -7,6 +7,8 @@ from api.preprocessing_router import router as preprocessing_router
 
 app = FastAPI()
 
+DATA_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'data')
+
 app.include_router(augmentation_router, prefix="/augmentation", tags=['augmentation'])
 app.include_router(recomendation_router, prefix="/recommendation", tags=['recommendation'])
 app.include_router(preprocessing_router, prefix="/preprocessing", tags=['preprocessing'])

@@ -4,6 +4,12 @@ import duckdb
 
 router = APIRouter()
 
+@router.get('/read_file_list')
+def read_file_list():
+ 
+    paths = pd.get_all_file_paths(DATA_DIR)
+    return {'paths': paths}
+
 @router.post('/add_file_data')
 async def add_file_data(request: Request):
     '''
