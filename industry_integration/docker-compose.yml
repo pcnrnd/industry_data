@@ -6,7 +6,7 @@ services:
     container_name: industry_backend
     volumes:
       - ./backend:/app
-      - /G:/industry_data:/app
+      # - /G:/industry_data:/app
     ports:
       - "8000:8000"
     environment:
@@ -21,7 +21,7 @@ services:
     container_name: industry_front
     volumes:
       - ./front:/app
-      - /G:/industry_data:/app
+      # - /G:/industry_data:/app
     ports:
       - "8501:8501"
     environment:
