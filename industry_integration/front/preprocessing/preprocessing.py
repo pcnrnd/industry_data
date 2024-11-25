@@ -9,45 +9,58 @@ import requests, glob, os
 
 st.set_page_config(layout='wide')
 
-with st.form("path_and_tablee_name"):
-    st.write("Input path and tablee name")
+col1, col2 = st.columns(2)
+with col1:
+    with st.form("path_and_tablee_name"):
+        st.write("Input path and tablee name")
 
-    text_data = st.text_input('input data path')
-    table_name = st.text_input('input table name')
+        text_data = st.text_input('input data path')
+        table_name = st.text_input('input table name')
 
-    json_data = {'abs_path': text_data,
-                'table_name': table_name}
+        json_data = {'abs_path': text_data,
+                    'table_name': table_name}
 
-    submitted = st.form_submit_button("Submit")
-    if submitted:
+        submitted = st.form_submit_button("Submit")
+        if submitted:
+            try:
+                response = requests.post('http://industry_backend:8000/preprocessing/add_file_data', json=json_data)
+
+                # 응답 처리
+                if response.status_code == 200:
+                    st.success("Data submitted successfully!")
+                    st.json(response.json())  # API 응답 데이터 출력
+                else:
+                    st.error(f"Failed to submit data: {response.status_code}")
+                    st.write(response.text)  # 오류 메시지 출력
+            except Exception as e:
+                st.error(f"An error occurred: {e}")
+
+with col2:
+    with st.form("Show tables"):
+        submitted = st.form_submit_button("Submit")
+        if submitted:
+            try:
+                response = requests.get('http://industry_backend:8000/preprocessing/show_tables')
+
+                # 응답 처리
+                if response.status_code == 200:
+                    st.success("Data submitted successfully!")
+                    st.json(response.json())  # API 응답 데이터 출력
+                else:
+                    st.error(f"Failed to submit data: {response.status_code}")
+                    st.write(response.text)  # 오류 메시지 출력
+            except Exception as e:
+                st.error(f"An error occurred: {e}")
+
+    with st.form('select data'):
+        table_name = st.text_input('input table name')
         try:
-            response = requests.post('http://industry_backend:8000/preprocessing/add_file_data', json=json_data)
-
-            # 응답 처리
+            response = requests.get('http://industry_backend:8000/preprocessing/read_file_data?table_name={table_name}', json=json_data)
             if response.status_code == 200:
-                st.success("Data submitted successfully!")
-                st.json(response.json())  # API 응답 데이터 출력
+                st.success('Query success!')
+                st.json(response.json())
             else:
                 st.error(f"Failed to submit data: {response.status_code}")
-                st.write(response.text)  # 오류 메시지 출력
-        except Exception as e:
-            st.error(f"An error occurred: {e}")
-
-
-with st.form("Show tables"):
-    submitted = st.form_submit_button("Submit")
-    if submitted:
-        try:
-            response = requests.get('http://industry_backend:8000/preprocessing/show_tables')
-
-            # 응답 처리
-            if response.status_code == 200:
-                st.success("Data submitted successfully!")
-                st.json(response.json())  # API 응답 데이터 출력
-            else:
-                st.error(f"Failed to submit data: {response.status_code}")
-                st.write(response.text)  # 오류 메시지 출력
-        except Exception as e:
-            st.error(f"An error occurred: {e}")
-
-
+                st.write(response.text)  # 오류 메시지 출력         
+        except: Exception as e:
+            st.error(f'An error occurred: {e}')
