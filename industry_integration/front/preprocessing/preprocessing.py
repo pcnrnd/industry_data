@@ -7,7 +7,7 @@
 import streamlit as st
 import requests, glob, os
 
-
+st.set_page_config(layout='wide')
 
 with st.form("path_and_tablee_name"):
     st.write("Input path and tablee name")
