@@ -58,7 +58,7 @@ with col2:
         submitted = st.form_submit_button("Submit")
         if submitted:
             try:
-                response = requests.get('http://industry_backend:8000/preprocessing/read_file_data/table_name={table_name}')
+                response = requests.get(f'http://industry_backend:8000/preprocessing/read_file_data/{table_name}')
                 if response.status_code == 200:
                     st.success('Query success!')
                     st.json(response.json())

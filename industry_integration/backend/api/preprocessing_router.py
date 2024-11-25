@@ -24,7 +24,7 @@ async def add_file_data(request: Request):
     con = duckdb.connect(database='./database.db')
     con.register("df_temp", df)
     con.execute(f'DROP TABLE IF EXISTS {table_name}')
-    con.execute(f'CREATE TABLE "{table_name}" AS SELECT * FROM df')
+    con.execute(f'CREATE TABLE "{table_name}" AS SELECT * FROM df_temp')
 
     return {'message': '데이터 저장 완료!'}
 
