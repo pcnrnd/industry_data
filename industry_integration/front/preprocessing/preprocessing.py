@@ -12,7 +12,7 @@ st.set_page_config(layout='wide')
 col1, col2 = st.columns(2)
 with col1:
     with st.form("path_and_tablee_name"):
-        st.write("Input path and tablee name")
+        st.write("Input path and table name")
 
         text_data = st.text_input('input data path')
         table_name = st.text_input('input table name')
@@ -37,6 +37,7 @@ with col1:
 
 with col2:
     with st.form("Show tables"):
+        st.write('Check table name')
         submitted = st.form_submit_button("Submit")
         if submitted:
             try:
