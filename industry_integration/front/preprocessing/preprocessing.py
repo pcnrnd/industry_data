@@ -14,15 +14,20 @@ st.set_page_config(layout='wide')
 
 with st.form('show_file_list'):
     st.write('Show file list')
+    submitted = st.form_submit_button("Submit")
+    if submitted:
+        try:
+            response = requests.get('http://industry_backend:8000/preprocessing/read_file_list')
+            if response.status_code == 200:
+                select_result = response.json()
+                st.json(select_result)
+                st.selectbox('File list', list(select_result['paths']))
 
-    response = requests.get('http://industry_backend:8000/preprocessing/read_file_list')
-    if response.status_code == 200:
-        select_result = response.json()
-        st.json(select_result)
-        # st.selectbox('File list', (list(select_result)))
-    else:
-        st.error(f"Failed to submit data: {response.status_code}")
-        st.write(response.status_code)
+            else:
+                st.error(f"Failed to submit data: {response.status_code}")
+                st.write(response.status_code)
+        except Exception as e:
+            st.error(f'An error occurred: {e}')
 
 col1, col2 = st.columns(2)
 with col1:

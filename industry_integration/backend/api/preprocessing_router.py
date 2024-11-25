@@ -3,7 +3,7 @@ from services.dataframe import PolarsDataFrame, PandasDataFrame
 import duckdb
 
 router = APIRouter()
-
+DATA_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'data')
 @router.get('/read_file_list')
 def read_file_list():
     pf = PolarsDataFrame()
