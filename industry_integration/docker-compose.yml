@@ -6,7 +6,7 @@ services:
     container_name: industry_backend
     volumes:
       - ./backend:/app
-      - /mnt/g/industry_data:/app/data
+      - /mnt/g/industry_data:/app/api/data
     ports:
       - "8000:8000"
     environment:
