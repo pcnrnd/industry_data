@@ -54,13 +54,15 @@ with col2:
 
     with st.form('select data'):
         table_name = st.text_input('input table name')
-        try:
-            response = requests.get('http://industry_backend:8000/preprocessing/read_file_data?table_name={table_name}', json=json_data)
-            if response.status_code == 200:
-                st.success('Query success!')
-                st.json(response.json())
-            else:
-                st.error(f"Failed to submit data: {response.status_code}")
-                st.write(response.text)  # 오류 메시지 출력         
-        except: Exception as e:
-            st.error(f'An error occurred: {e}')
+        submitted = st.form_submit_button("Submit")
+        if submitted:
+            try:
+                response = requests.get('http://industry_backend:8000/preprocessing/read_file_data?table_name={table_name}', json=json_data)
+                if response.status_code == 200:
+                    st.success('Query success!')
+                    st.json(response.json())
+                else:
+                    st.error(f"Failed to submit data: {response.status_code}")
+                    st.write(response.text)  # 오류 메시지 출력         
+            except Exception as e:
+                st.error(f'An error occurred: {e}')
