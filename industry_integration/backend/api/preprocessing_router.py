@@ -1,13 +1,14 @@
 from fastapi import APIRouter, Request
 from services.dataframe import PolarsDataFrame, PandasDataFrame
 import duckdb
-
+import os
 router = APIRouter()
 DATA_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'data')
+
 @router.get('/read_file_list')
 def read_file_list():
     pf = PolarsDataFrame()
-    paths = pf.get_all_file_paths(DATA_DIR)
+    paths = pf.get_all_file_paths('../data/')
     return {'paths': paths}
 
 @router.post('/add_file_data')
@@ -18,7 +19,6 @@ async def add_file_data(request: Request):
     data = await request.json()
     abs_path_of_file = data['abs_path']
     table_name = data['table_name']
-
 
     # pf = PolarsDataFrame()
     pd = PandasDataFrame()

@@ -4,6 +4,7 @@ from fastapi.responses import JSONResponse
 from api.augmentation_router import router as augmentation_router
 from api.recommendation_router import router as recomendation_router
 from api.preprocessing_router import router as preprocessing_router
+import os
 
 app = FastAPI()
 
