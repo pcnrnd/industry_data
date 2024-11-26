@@ -8,7 +8,7 @@ DATA_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'data')
 @router.get('/read_file_list')
 def read_file_list():
     pf = PolarsDataFrame()
-    paths = pf.get_all_file_paths('../data/')
+    paths = pf.get_all_file_paths('./data/')
     return {'paths': paths}
 
 @router.post('/add_file_data')
