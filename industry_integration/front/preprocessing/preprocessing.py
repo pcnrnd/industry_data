@@ -68,5 +68,50 @@ def main():
         processed_image = ImageOps.mirror(processed_image)
 
 
+    path = 'G:\industry_data\sand_data\data\Training\original_data\TS_1.모래입자크기분류_1'
+    path_data = prepro.get_all_file_paths(path)
+    file_df = prepro.make_polars_dataframe(path_data)
+
+    with st.container():
+        col1, col2 = st.columns(2)
+        with col1:
+            st.subheader("Image File Size Distribution")
+            fig = px.histogram(file_df['file_size'], nbins=100, title="File Size Distribution") # , labels={"value": "File Size (Bytes)"}
+            st.plotly_chart(fig)
+        with col2:
+            st.header("Image Resolution Distribution")
+            fig = px.scatter(x=file_df['image_width'], y=file_df['image_height'], labels={"x": "Width (pixels)", "y": "Height (pixels)"}, title="Image Resolutions")
+            st.plotly_chart(fig)
+
+    # 좌우 레이아웃 설정
+    col1, col2 = st.columns(2)
+    with st.container(border=True):
+        with col1:
+            st.subheader("원본 이미지")
+            st.image(original_image, use_column_width=True, caption="원본 이미지")
+            
+    with st.container(border=True):
+        with col2:
+            st.subheader("전처리된 이미지")
+            st.image(processed_image, use_column_width=True, caption="전처리된 이미지")
+
+    st.subheader('메타데이터(Metadata)')
+    st.dataframe(file_df, use_container_width=True)
+
+
+    # 다운로드
+    st.sidebar.markdown("### 처리된 이미지 다운로드")
+    output_format = st.sidebar.selectbox("저장 파일 형식", ["PNG", "JPEG"])
+    st.sidebar.download_button(
+        label="이미지 다운로드",
+        data=get_image_download_buffer(processed_image, format=output_format),
+        file_name=f"processed_image.{output_format.lower()}",
+        mime=f"image/{output_format.lower()}"
+    )
+
+    st.sidebar.button(
+        '전체 데이터 적용'
+    )
+
 if __name__ == "__main__":
     main()
