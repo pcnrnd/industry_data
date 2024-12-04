@@ -1,89 +1,38 @@
-# PATH_CCTV_DATA = './exhdd/industry_data/117.산업시설 열화상 CCTV 데이터/01.데이터/1.Training/원천데이터/*'
-# PATH_CCTV_LABEL_DATA = './exhdd/industry_data/117.산업시설 열화상 CCTV 데이터/01.데이터/1.Training/라벨링데이터/*'
-
-# PATH_SAND_DATA = './exhdd/industry_data/264.건설 모래 품질 관리데이터/01-1.정식개방데이터/Training/01.원천데이터/*'
-# PATH_SAND_LABEL_DATA = './exhdd/industry_data/264.건설 모래 품질 관리데이터/01-1.정식개방데이터/Training/02.라벨링데이터/*'
-
 import streamlit as st
-import requests
-import glob
-import os
+from PIL import Image, ImageOps
+from io import BytesIO
+from lib.prepro import Preprocessing
+import plotly.express as px
 
 st.set_page_config(layout='wide')
 
+prepro = Preprocessing()
 
-with st.form('show_file_list'):
-    st.write('Show file list')
-    submitted = st.form_submit_button("Submit")
-    if submitted:
-        try:
-            response = requests.get('http://industry_backend:8000/preprocessing/read_file_list')
-            if response.status_code == 200:
-                select_result = response.json()
-                st.json(select_result)
-                st.selectbox('File list', list(select_result['paths']))
+# 이미지 변환 및 다운로드 함수
+def get_image_download_buffer(image, format="PNG"):
+    buffer = BytesIO()
+    image.save(buffer, format=format)
+    buffer.seek(0)
+    return buffer
 
-            else:
-                st.error(f"Failed to submit data: {response.status_code}")
-                st.write(response.status_code)
-        except Exception as e:
-            st.error(f'An error occurred: {e}')
+def main():
+    st.title("이미지 데이터 전처리")
+    st.sidebar.header("전처리 옵션")
 
-col1, col2 = st.columns(2)
-with col1:
-    with st.form("path_and_tablee_name"):
-        st.write("Input path and table name")
+    # 이미지 업로드
+    uploaded_file = st.sidebar.file_uploader("이미지를 업로드하세요", type=["jpg", "jpeg", "png"])
 
-        text_data = st.text_input('input data path')
-        table_name = st.text_input('input table name')
+    # 원본 이미지
+    original_image = Image.open(uploaded_file)
 
-        json_data = {'abs_path': text_data,
-                    'table_name': table_name}
+    # 전처리 옵션
+    option_rotate = st.sidebar.slider("이미지 회전 (도)", -180, 180, 0)
+    option_resize = st.sidebar.checkbox("이미지 크기 조정")
+    option_grayscale = st.sidebar.checkbox("흑백 변환")
 
-        submitted = st.form_submit_button("Submit")
-        if submitted:
-            try:
-                response = requests.post('http://industry_backend:8000/preprocessing/add_file_data', json=json_data)
+    # 전처리 시작
+    processed_image = original_image.copy()
 
-                # 응답 처리
-                if response.status_code == 200:
-                    st.success("Data submitted successfully!")
-                    st.json(response.json())  # API 응답 데이터 출력
-                else:
-                    st.error(f"Failed to submit data: {response.status_code}")
-                    st.write(response.text)  # 오류 메시지 출력
-            except Exception as e:
-                st.error(f"An error occurred: {e}")
 
-with col2:
-    with st.form("Show tables"):
-        st.write('Check table name')
-        submitted = st.form_submit_button("Submit")
-        if submitted:
-            try:
-                response = requests.get('http://industry_backend:8000/preprocessing/show_tables')
-
-                # 응답 처리
-                if response.status_code == 200:
-                    st.success("Data submitted successfully!")
-                    st.json(response.json())  # API 응답 데이터 출력
-                else:
-                    st.error(f"Failed to submit data: {response.status_code}")
-                    st.write(response.text)  # 오류 메시지 출력
-            except Exception as e:
-                st.error(f"An error occurred: {e}")
-
-    with st.form('select data'):
-        table_name = st.text_input('input table name')
-        submitted = st.form_submit_button("Submit")
-        if submitted:
-            try:
-                response = requests.get(f'http://industry_backend:8000/preprocessing/read_file_data/{table_name}')
-                if response.status_code == 200:
-                    st.success('Query success!')
-                    st.json(response.json())
-                else:
-                    st.error(f"Failed to submit data: {response.status_code}")
-                    st.write(response.text)  # 오류 메시지 출력         
-            except Exception as e:
-                st.error(f'An error occurred: {e}')
+if __name__ == "__main__":
+    main()
