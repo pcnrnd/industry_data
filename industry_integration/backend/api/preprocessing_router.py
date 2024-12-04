@@ -1,9 +1,22 @@
 from fastapi import APIRouter, Request
+from fastapi.responses import JSONResponse
 from services.dataframe import PolarsDataFrame, PandasDataFrame
+from services.prepro_img import ImageProcessor
 import duckdb
 import os
 router = APIRouter()
 DATA_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'data')
+
+img_prepro = ImageProcessor()
+
+@router.post('/extract_metadata')
+async def extract_metadata(request: Request):
+    data = request.json()
+    path = data['path']
+    path_data = img_prepro.get_all_file_paths(path)
+    df = img_prepro.make_polars_dataframe(path_data)
+    result = df.to_json()
+    return JSONResponse(content=result)
 
 @router.get('/read_file_list')
 def read_file_list():
