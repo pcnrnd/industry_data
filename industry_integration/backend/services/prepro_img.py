@@ -105,9 +105,9 @@ class ImageProcessor(ImageSaver):
                 if "resize" in params:
                     width, height = params["resize"]
                     image = self.resize(image, width, height)
-                if params.get("grayscale", False):
+                if "grayscale" in params:
                     image = self.grayscale(image)
-                if params.get("invert", False):
+                if "invert" in params:
                     image = self.invert(image)
                 if "padding" in params:
                     padding_size, padding_color = params["padding"]
@@ -118,9 +118,9 @@ class ImageProcessor(ImageSaver):
                 if "fit" in params:
                     width, height = params["fit"]
                     image = self.fit(image, width, height)
-                if params.get("flip", False):
+                if "flip" in params:
                     image = self.flip(image)
-                if params.get("mirror", False):
+                if "mirror" in params:
                     image = self.mirror(image)
 
                 # 전처리된 이미지를 배열로 변환 후 리스트에 추가
