@@ -120,6 +120,7 @@ with st.spinner('Wait for it...'):
                     data_dump = json.dumps({'json_data':json_data, 'target': target_feture}) # 학습 데이터, Target Data 객체를 문자열로 직렬화(serialize)
                     data = json.loads(data_dump) # json을 파이썬 객체로 변환
                     response = requests.post('http://industry_backend:8000/recommendation/new_clf', json=data) # 127.0.0.1 / new_clf
+
                     if response.status_code == 200: 
                         json_data = response.json() 
                         data = json.loads(json_data['result'])

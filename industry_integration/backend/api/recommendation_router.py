@@ -17,7 +17,7 @@ async def new_clf(request: Request):
 
     reg_compare = compare_clf_models(df, target, n_trials=5)
     dumps_data = json.dumps(reg_compare)
-    print('result_data: ', dumps_data)
+    # print('result_data: ', dumps_data)
 
     return JSONResponse(content={'result': dumps_data})
 
@@ -29,5 +29,5 @@ async def new_reg(request: Request):
     # reg_compare = RegressionModels(df, target, n_trials=10).run_reg_models()
     reg_compare = compare_reg_models(df, target, n_trials=5)
     dumps_data = json.dumps(reg_compare)
-    print('result_data: ', dumps_data)
+    # print('result_data: ', dumps_data)
     return JSONResponse(content={'result': dumps_data})

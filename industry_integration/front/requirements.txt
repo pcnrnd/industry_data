@@ -4,3 +4,6 @@ scikit-learn
 streamlit
 imbalanced-learn
 matplotlib
+networkx
+graphviz
+streamlit_timeline

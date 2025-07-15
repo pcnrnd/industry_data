@@ -8,3 +8,4 @@ exhdd
 catboost_info
 .venv
 venv
+*log

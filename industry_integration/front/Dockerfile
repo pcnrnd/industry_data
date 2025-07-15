@@ -13,9 +13,9 @@ RUN pip install --upgrade pip
 RUN pip install --no-cache-dir -r requirements.txt
 
 # FastAPI와 Streamlit의 포트를 오픈
-# EXPOSE 8501
+EXPOSE 8501
 
 
 # FastAPI 서버와 Streamlit 서버를 동시에 실행할 수 있도록 설정
 # 쉘 명령어로 FastAPI와 Streamlit을 백그라운드에서 실행하는 명령어 작성
-CMD ["sh", "-c", "streamlit run app.py --server.address $STREAMLIT_HOST --server.port $STREAMLIT_PORT"]
+CMD ["sh", "-c", "streamlit run app.py --server.address $STREAMLIT_HOST --server.port $STREAMLIT_PORT --server.runOnSave true"]

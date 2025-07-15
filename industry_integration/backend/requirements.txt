@@ -9,3 +9,5 @@ imbalanced-learn
 polars
 duckdb
 pyarrow
+h5py
+python-multipart

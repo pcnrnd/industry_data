@@ -13,6 +13,6 @@ RUN pip install --upgrade pip
 RUN pip install --no-cache-dir -r requirements.txt
 
 # FastAPI와 Streamlit의 포트를 오픈
-# EXPOSE 8000
+EXPOSE 8000
 
 CMD ["sh", "-c", "uvicorn main:app --host $FASTAPI_HOST --port $FASTAPI_PORT"]
