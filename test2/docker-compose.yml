@@ -1,0 +1,37 @@
+services:
+  backend:
+    build: 
+      context: ./backend
+    image: industry_backend
+    container_name: industry_backend
+    volumes:
+      - ./backend:/app
+      # - /mnt/g/industry_data:/app/api/data
+    ports:
+      - "8000:8000"
+    environment:
+      - FASTAPI_HOST=0.0.0.0  # 기본값을 재정의
+      - FASTAPI_PORT=8000
+    networks:
+      - industry-network
+  front:
+    build: 
+      context: ./front
+      
+    image: industry_front
+    container_name: industry_front
+    volumes:
+      - ./front:/app
+    ports:
+      - "8501:8501"
+    environment:
+      - STREAMLIT_HOST=0.0.0.0
+      - STREAMLIT_PORT=8501
+    networks:
+      - industry-network
+    depends_on:
+      - backend # backend 실행 후 front 시작
+
+networks:
+  industry-network:
+    driver: bridge
