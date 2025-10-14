@@ -9,3 +9,12 @@ catboost_info
 .venv
 venv
 *log
+*.json
+__pycache__
+*.log
+*.csv
+data
+.venv
+*.db
+catboost_info
+*.pyc
