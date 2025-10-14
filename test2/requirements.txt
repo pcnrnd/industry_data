@@ -1,0 +1,10 @@
+pandas
+plotly
+fastapi
+scikit-learn
+streamlit
+uvicorn[standard]
+catboost
+xgboost
+optuna
+imbalanced-learn
