@@ -2,7 +2,6 @@ services:
   backend:
     build: 
       context: ./backend
-    image: industry_backend
     container_name: industry_backend
     volumes:
       - ./backend:/app
@@ -17,8 +16,6 @@ services:
   front:
     build: 
       context: ./front
-      
-    image: industry_front
     container_name: industry_front
     volumes:
       - ./front:/app
