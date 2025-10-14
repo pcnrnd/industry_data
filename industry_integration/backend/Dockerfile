@@ -1,12 +1,12 @@
 # 베이스 이미지로 Python을 사용
-FROM python:3.11-slim
+FROM python:3.10
 
 # 작업 디렉토리 설정
 WORKDIR /app
 
 # 의존성 파일 복사
-COPY requirements.txt .
-COPY . /app
+COPY ./requirements.txt requirements.txt
+COPY ./ /app
 
 # 필요한 패키지 설치
 RUN pip install --upgrade pip
